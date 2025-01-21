@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 import cv2
+import math
 
 # #########################################################################################
 #                                                                                         #
@@ -166,14 +167,26 @@ menu = pygame.transform.scale(menu, (SCREEN_WIDTH, SCREEN_HEIGHT))
 game_theme = pygame.mixer.Sound("eclipse8bit.wav")
 level_up_sound_30 = pygame.mixer.Sound("easy_level.wav")
 poison_hit_sound = pygame.mixer.Sound("namja(1).wav")
-booster_hit_sound = pygame.mixer.Sound("fly.wav")
+booster_hit_sound = pygame.mixer.Sound("fly(1).wav")
 booster_hit_sound.set_volume(0.4)
 game_over_sound = pygame.mixer.Sound("out.wav")
 game_over_sound.set_volume(1.0)
 heptagon_collect = pygame.mixer.Sound("coins.wav")
 heptagon_collect.set_volume(0.3)
 live_hit_sound = pygame.mixer.Sound("hardcarry(1).wav")
-# slow_hit_sound = pygame.mixer.Sound(".wav")
+slow_hit_sound = pygame.mixer.Sound("palapapa.wav")
+
+# --
+
+ahgase_twit = pygame.mixer.Sound("twitter(1).wav")
+jb = pygame.mixer.Sound("darling.wav")
+mk = pygame.mixer.Sound("outofthedoor.wav")
+js = pygame.mixer.Sound("smooth.wav")
+jy = pygame.mixer.Sound("her.wav")
+yj = pygame.mixer.Sound("yj.wav")
+bb = pygame.mixer.Sound("tidalwave.wav")
+yg = pygame.mixer.Sound("yg.wav")
+
 
 
 # ----------------------
@@ -254,20 +267,28 @@ def choisir_personnage():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     choix = jayb
+                    jb.play()
                 elif event.key == pygame.K_2:
                     choix = mark
+                    mk.play()
                 elif event.key == pygame.K_3:
                     choix = jackson
+                    js.play()
                 elif event.key == pygame.K_4:
                     choix = jinyoung
+                    jy.play()
                 elif event.key == pygame.K_5:
                     choix = ars
+                    yj.play()
                 elif event.key == pygame.K_6:
                     choix = bambam
+                    bb.play()
                 elif event.key == pygame.K_7:
                     choix = yugyeom
+                    yg.play()
                 elif event.key == pygame.K_8:
                     choix = ahgase
+                    ahgase_twit.play()
 
         # Mettre à jour l'écran
         pygame.display.flip()
@@ -298,8 +319,18 @@ live_note_color = (252, 126, 206) # couleur
 live_notes = []
 
 # Notes booster slow
-# slow_note_color = (0, 0, 0) # couleur
-# slow_notes = []
+def get_multicolor_color():
+    """Renvoie une couleur changeante dynamiquement pour créer un effet arc-en-ciel."""
+    time = pygame.time.get_ticks() / 1000  # Temps en secondes (évolue en continu)
+    cycle_speed = 2  # Contrôle la vitesse du changement de couleur (augmente pour ralentir)
+
+    # Cycle sinusoidal pour l'effet arc-en-ciel
+    red = int((math.sin(time * cycle_speed) + 1) * 127.5)
+    green = int((math.sin(time * cycle_speed + 2 * math.pi / 3) + 1) * 127.5)
+    blue = int((math.sin(time * cycle_speed + 4 * math.pi / 3) + 1) * 127.5)
+    return (red, green, blue)
+
+slow_notes = []
 
 
 def generate_note():
@@ -350,13 +381,23 @@ score_per_level = 20
 NOTE_FREQUENCY = 90
 POISON_NOTE_FREQUENCY = 200
 BOOSTER_NOTE_FREQUENCY = 300
+SLOW_NOTE_FREQUENCY = 400
+slow_effect_time = 0
 poison_speed = 3
 
 def adjust_speed(score):
     """Ajuste la vitesse des notes et des notes empoisonnées en fonction du score."""
+    global slow_effect_time
     base_freq = NOTE_FREQUENCY
     max_speed = 1 
     increment_per_level = 1
+
+    # on ralenti le jeu si le booster slow est actif
+    if slow_effect_time > 0:
+        slow_effect_time -= 1
+        current_max_speed = max_speed + (score // score_per_level) * increment_per_level
+        return current_max_speed - 1
+
     return max_speed + (score // score_per_level) * increment_per_level
 
 def adjust_frequency(level):
@@ -389,6 +430,7 @@ def update_booster_notes(booster_notes):
     for note in booster_notes:
         note[1] += 8  # Vitesse élevée pour les notes booster
     return [note for note in booster_notes if note[1] < SCREEN_HEIGHT]  # Garder les notes à l'écran
+
 
 # ----------------------
 
@@ -482,6 +524,21 @@ def check_collision_lives(live_notes, snake_x, snake_y):
         else:
             new_life_notes.append(note)
     return new_life_notes
+
+def check_collision_slow(slow_notes, snake_x, snake_y):
+    """Vérifie les collisions avec les notes booster."""
+    global slow_effect_time
+    new_slow_notes = []
+    for note in slow_notes:
+        if snake_x < note[0] + note_width and snake_x + perso_choisi.get_width() > note[0] and \
+           snake_y < note[1] + note_height and snake_y + perso_choisi.get_height() > note[1]:
+            slow_notes.remove(note)
+            slow_effect_time = 600
+            slow_hit_sound.play()
+        else:
+            new_slow_notes.append(note)
+    return new_slow_notes
+
 # --------------------
 
 def reset_game():
@@ -572,8 +629,8 @@ while running:
             if random.randint(1, NOTE_FREQUENCY) == 1:
                 notes.append(generate_note())
 
-            # Générer une note empoisonnée dès 5 de score
-            if score >= 5 and  random.randint(1, POISON_NOTE_FREQUENCY) == 1:
+            # Générer une note empoisonnée dès 0 de score
+            if score >= 0 and  random.randint(1, POISON_NOTE_FREQUENCY) == 1:
                 poison_notes.append(generate_note())
             
             # Générer un booster si on a atteint 30 de score
@@ -583,16 +640,22 @@ while running:
             # Générer un booster vie si on a atteint 50 de score
             if score >= 50 and random.randint(1, BOOSTER_NOTE_FREQUENCY) == 1:
                 live_notes.append(generate_note())
-
             
+            # Generer un booster de vitesse si on atteint 70 de score
+            if score >= 70 and random.randint(1, SLOW_NOTE_FREQUENCY) == 1:
+                slow_notes.append(generate_note())
+            
+
             notes, poison_notes = update_notes(notes, poison_notes)
             booster_notes = update_booster_notes(booster_notes)
             live_notes = update_booster_notes(live_notes)
+            slow_notes = update_booster_notes(slow_notes)
 
             check_collision(notes, snake_x, snake_y)
             check_collision(poison_notes, snake_x, snake_y, is_poison=True)
             check_collision_booster(booster_notes, snake_x, snake_y)
             check_collision_lives(live_notes, snake_x, snake_y)
+            check_collision_slow(slow_notes,snake_x, snake_y)
 
             # Vérifier et mettre à jour le niveau
             check_level(score)
@@ -605,6 +668,8 @@ while running:
             # pygame.draw.rect(screen, Green, (snake_x, snake_y, snake_width, snake_height))
             screen.blit(perso_choisi, (snake_x, snake_y))
 
+        slow_note_color = get_multicolor_color() # couleur 
+
         # Dessiner les notes
         for note in notes:
             pygame.draw.rect(screen, note_color, (note[0], note[1], note_width, note_height))
@@ -614,6 +679,8 @@ while running:
             pygame.draw.rect(screen, booster_note_color, (booster_note[0], booster_note[1], note_width, note_height))
         for live_note in live_notes:
             pygame.draw.rect(screen, live_note_color, (live_note[0], live_note[1], note_width, note_height))
+        for slow_note in slow_notes:
+            pygame.draw.rect(screen, slow_note_color, (slow_note[0], slow_note[1], note_width, note_height))
 
         # Score 
         font = pygame.font.Font(None, 36)
@@ -627,6 +694,14 @@ while running:
         # afficher les vies
         lives_text = font.render(f"Lives: {lives}", True, (0, 0, 0))
         screen.blit(lives_text, (630, 110))
+
+        # Compte à rebours booster slow
+        if slow_effect_time > 0:
+            font = pygame.font.Font(None, 36)
+            slow_text = font.render(f"Slow Effect: {slow_effect_time // 60} s", True, (255, 0, 0))
+            screen.blit(slow_text, (SCREEN_WIDTH // 2 - 100, 20))
+
+
 
         # ------------------------
 
