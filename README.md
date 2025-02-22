@@ -25,6 +25,9 @@ This project is a personal and creative exercise designed to entertain while exp
 You can give a donation if you want to support my work so I can do more little project/games like this :
 here is my unique and **Only Ko-fi account** : [Donation page](https://ko-fi.com/cholorskofi)
 
+## Bugs and request
+If there is any bug please feels free to notice me my pulling a request or contact me on my social media : @Cholorsplash on X or Instagram 
+
 ## 📜 Credits and rights
 This project is non-commercial and was created for educational and recreational purposes. Please check the credits file for more information.
 
