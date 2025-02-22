@@ -21,6 +21,10 @@ This project is a personal and creative exercise designed to entertain while exp
 - **Python**: Main programming language.
 - **Pygame**: Framework used for game development.
 
+## Donation
+You can give a donation if you want to support my work so I can do more little project/games like this :
+here is my unique and **Only Ko-fi account** : [Donation page](https://ko-fi.com/cholorskofi)
+
 ## 📜 Credits and rights
 This project is non-commercial and was created for educational and recreational purposes. Please check the credits file for more information.
 
