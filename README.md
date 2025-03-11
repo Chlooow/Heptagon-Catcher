@@ -1,6 +1,8 @@
 # 🎵 Heptagon Catcher
 Heptagon Catcher is a fun and engaging game where players must catch musical notes while avoiding traps and collecting bonuses. Designed for pure entertainment, this project combines simple yet addictive mechanics with unique visuals and sound design.
 
+LINK TO .EXE FOR WINDOWS GAME : (here)[https://drive.google.com/file/d/1KfNE4Q9xOtLAjj3KExlLiNDbSfQrDTav/view?usp=sharing]
+
 ## 📋 Features
 - **Dynamic gameplay**: Catch regular notes(color = green), avoid poison notes (color = red), and aim for booster notes to increase your score!
 - **Progressive difficulty**: The challenge adapts to your score, keeping the game exciting.
