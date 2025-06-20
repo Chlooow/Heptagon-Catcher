@@ -4,6 +4,7 @@ Heptagon Catcher is a fun and engaging game where players must catch musical not
 LINK TO .EXE FOR WINDOWS GAME : [here](https://drive.google.com/file/d/1KfNE4Q9xOtLAjj3KExlLiNDbSfQrDTav/view?usp=sharing)
 
 ## 📋 Features
+- **NEW FEATURE**: Can be played with a joystick !
 - **Dynamic gameplay**: Catch regular notes(color = green), avoid poison notes (color = red), and aim for booster notes to increase your score!
 - **Progressive difficulty**: The challenge adapts to your score, keeping the game exciting.
 - **Booster notes**: Available starting at a score of 30, these rare and fast notes give you a +2 score bonus when caught. color = blue
