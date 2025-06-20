@@ -49,6 +49,34 @@ pygame.init()
 
 # ----------------------
 
+# init manette
+
+# Initialiser la manette
+pygame.joystick.init()
+if pygame.joystick.get_count() > 0:
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+    print(f"Manette connectée : {joystick.get_name()}")
+else:
+    joystick = None
+
+def control_manette(x):
+    """Déplace le personnage avec le joystick gauche de la manette."""
+    if joystick:
+        axis_value = joystick.get_axis(0)  # axe horizontal du joystick gauche
+        if abs(axis_value) > 0.1:  # seuil pour éviter le bruit de signal
+            x += int(axis_value * 5)  # vitesse de déplacement
+
+    # Limites écran
+    if x < 0:
+        x = 0
+    if x > SCREEN_WIDTH - perso_choisi.get_width():
+        x = SCREEN_WIDTH - perso_choisi.get_width()
+    return x
+
+
+# ----------------------
+
 # Video Introductif 
 # Pour skip la video il faut appuyer sur [echap]
 
@@ -302,7 +330,6 @@ def choisir_personnage():
 note_color = (40, 169, 40) # vert foncé
 note_width = 15
 note_height = 15
-# note_speed = 2
 
 notes = []
 
@@ -662,7 +689,8 @@ while running:
             adjust_frequency(level) # ajuste la fréquence des notes 
 
             # déplacement du serpent
-            snake_x = controlkey(x=snake_x)
+            snake_x = controlkey(x=snake_x) # controle clavier
+            snake_x = control_manette(x=snake_x)  # contrôle manette
 
             # Dessiner le serpent
             # pygame.draw.rect(screen, Green, (snake_x, snake_y, snake_width, snake_height))
